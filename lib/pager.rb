@@ -4,20 +4,20 @@ module Pager
   def self.included(base)
     base.send :include, InstanceMethods
 
-    base.send :attr_accessor, :current_offset, :default_batch, :current_index
+    base.send :attr_accessor, :last_offset, :default_batch, :current_index
   end
 
   module InstanceMethods
     def filtered_page(limit, options={}, &block)
       self.default_batch = options.delete(:default_batch) || 1
-      self.current_index = index(self.current_offset || options.delete(:offset) || first)
+      self.current_index = options.include?(:offset) ? index(options.delete(:offset)) : (self.last_offset.nil? ? 0 : index(self.last_offset)+1) 
 
       catch(:filtered) do
         collected = []
         while collected.length != limit
           new_batch = next_batch
           if new_batch.empty?
-            self.current_offset = last
+            self.last_offset = last
             throw(:filtered, collected)
           end
 
@@ -25,7 +25,7 @@ module Pager
             collected << x if yield(x)
 
             if collected.size == limit
-              self.current_offset = index(x) == index(last) ? first : self[index(x) + 1]
+              self.last_offset = self[index(x)]
               throw :filtered, collected
             end
           end

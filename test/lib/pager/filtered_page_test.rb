@@ -23,7 +23,7 @@ describe 'filtered_page' do
 
   it 'keeps the current offset after done filtering' do
     @unfiltered.filtered_page(2) {|x| %w(c d).include?(x)}
-    assert_equal 'e', @unfiltered.current_offset
+    assert_equal 'd', @unfiltered.last_offset
   end
 
   it 'return next batch when called again' do
@@ -36,7 +36,7 @@ describe 'filtered_page' do
   end
 
   it 'return filtered result if nothing more to filter' do
-    assert_equal ['a','b'], @unfiltered.filtered_page(5) {|x| %w(a b z).include?(x)}
-    assert_equal [], @unfiltered.filtered_page(5) {|x| %w(a b z).include?(x)}
+    assert_equal ['a','b','j'], @unfiltered.filtered_page(5) {|x| %w(a b j).include?(x)}
+    assert_equal [], @unfiltered.filtered_page(5) {|x| %w(a b j).include?(x)}
   end
 end
