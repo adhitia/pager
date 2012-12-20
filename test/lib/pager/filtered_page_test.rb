@@ -30,4 +30,8 @@ describe 'filtered_page' do
     assert_equal ['a'], @unfiltered.filtered_page(1) {|x| %w(a b c).include?(x)}
     assert_equal ['b'], @unfiltered.filtered_page(1) {|x| %w(a b c).include?(x)}
   end
+
+  it 'return empty array when no more element' do
+    assert_equal [], @unfiltered.filtered_page(1) {|x| %w(z).include?(x)}
+  end
 end

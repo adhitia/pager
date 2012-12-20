@@ -12,14 +12,18 @@ module Pager
       self.default_batch = options.delete(:default_batch) || 1
       self.current_index = index(self.current_offset || options.delete(:offset) || first)
 
-      Array.new.tap do |collected|
+      catch(:filtered) do
+        collected = []
         while collected.length != limit
-          next_batch.each do |x|
+          new_batch = next_batch
+          throw(:filtered, []) if new_batch.empty?
+
+          new_batch.each do |x|
             collected << x if yield(x)
 
             if collected.size == limit
               self.current_offset = index(x) == index(last) ? first : self[index(x) + 1]
-              break
+              throw :filtered, collected
             end
           end
         end
@@ -30,7 +34,7 @@ module Pager
       index_start = self.current_index
       index_end = index_start + self.default_batch
       self.current_index = index_end + 1
-      dup[index_start..index_end]
+      dup[index_start..index_end] || []
     end
   end
 end
