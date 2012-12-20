@@ -16,7 +16,7 @@ module Pager
         collected = []
         while collected.length != limit
           new_batch = next_batch
-          throw(:filtered, []) if new_batch.empty?
+          throw(:filtered, collected) if new_batch.empty?
 
           new_batch.each do |x|
             collected << x if yield(x)
