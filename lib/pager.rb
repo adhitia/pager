@@ -9,8 +9,8 @@ module Pager
 
   module InstanceMethods
     def filtered_page(limit, options={}, &block)
-      self.default_batch = options.delete(:default_batch) || 1
-      self.current_index = options.include?(:offset) ? index(options.delete(:offset)) : (self.last_offset.nil? ? 0 : index(self.last_offset)+1) 
+      self.default_batch = options.delete(:default_batch) || 10
+      self.current_index = (options.include?(:offset) and !options[:offset].blank?) ? index(options.delete(:offset)) : (self.last_offset.nil? ? 0 : index(self.last_offset)+1)
 
       catch(:filtered) do
         collected = []
